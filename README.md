@@ -1,6 +1,10 @@
-# Sample Project
+# Assimilation
 
-This is as an example on how teams can structure their project repositories. Thanks to Lindsey Heagey and Joachim Meyer for the template, provided originally for [Geohackweek](https://github.com/geohackweek/sample_project_repository).
+#### Goals:
+* Use info in existing DEMs to interpolate/extrapolate between ICESat-2 points  
+* Quantify errors / adjusting existing DEMs with ICESat-2 data over bare rock  
+* Compare results from mid-latitude glaciers and polar glaciers  
+
 
 ## Files
 

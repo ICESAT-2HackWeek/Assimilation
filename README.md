@@ -1,19 +1,35 @@
 # Assimilation
 
-#### Goals:
-* Use info in existing DEMs to interpolate/extrapolate between ICESat-2 points  
-* Quantify errors / adjusting existing DEMs with ICESat-2 data over bare rock  
+## General Objectives
+* Get comfortable working with ICESat-2 and DEM raster data in Python  
+* Compare ICESat-2 data with various DEM raster data types (SAR, Lidar, Photogrammetry)
+* Quantify errors when adjusting existing DEMs with ICESat-2 data over bare ground  
 * Compare results from mid-latitude glaciers and polar glaciers  
+* Use info in existing DEMs to interpolate/extrapolate between ICESat-2 points  
 
+## Collaborators
+Debmita Bandyopadhyay  
+Friedrich Knuth  
+Tian Li  
+Mike Wood  
+Whyjay Zheng  
+
+## Team Lead
+Whyjay Zheng
+
+## Data Science Lead
+Friedrich Knuth
+
+## Study Sites
+* Arctic Polar Region
+* High-mountain Asia
+* Pacific Northwestern United States
 
 ## Files
-
 * `.gitignore`
 <br> Globally ignored files by `git` for the project.
 * `environment.yml`
 <br> `conda` environment description needed to run this project.
-* `README.md`
-<br> Description of the project. [Sample](https://geohackweek.github.io/wiki/github_project_management.html#project-guidelines)
 
 ## Folders
 

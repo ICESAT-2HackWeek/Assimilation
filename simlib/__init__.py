@@ -1,5 +1,5 @@
-from .coregistration import reference_dem
-import .atl06lib
+from simlib.coregistration import reference_dem
+import simlib.atl06lib
 
 __all__ = [
     'reference_dem',

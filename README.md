@@ -31,6 +31,10 @@ Friedrich Knuth
 * `environment.yml`
 <br> `conda` environment description needed to run this project.
 
+## Installation
+* `git clone https://github.com/ICESAT-2HackWeek/Assimilation.git`   
+* `pip install -e Assimilation`
+
 ## Folders
 
 ### `contributors`

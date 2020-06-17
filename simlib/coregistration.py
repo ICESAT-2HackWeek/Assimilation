@@ -66,7 +66,7 @@ class reference_dem:
     def show(self, ax=None):
         if not ax:
             import matplotlib.pyplot as plt
-            fig, ax = plt.subplot()
+            fig, ax = plt.subplots()
         ds_rasterio = rasterio.open(self.path)
         rio_show(ds_rasterio, ax=ax)
         

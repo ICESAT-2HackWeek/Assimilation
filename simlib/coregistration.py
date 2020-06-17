@@ -59,9 +59,13 @@ class reference_dem:
             self.bbox = [t_x.min(),t_y.min(),t_x.max(),t_y.max()]
             self.bbox_epsg = str(epsg)
             
-    def show(self):
+    def show(self, ax=None):
         import rasterio
         from rasterio.plot import show as rio_show
+        if not ax:
+            import matplotlib.pyplot as plt
+            fig, ax = plt.subplot()
         ds_rasterio = rasterio.open(self.path)
-        rio_show(ds_rasterio)
+        rio_show(ds_rasterio, ax=ax)
+
             

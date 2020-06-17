@@ -88,12 +88,12 @@ class reference_dem:
         # geometry = geoms[0] # shapely geometry
         # geoms = [mapping(geoms[0])] # transform to GeJSON format
         geoms = [mapping(geoms[i]) for i in range(len(geoms))]
-        with rasterio.open(self.fpath) as src:
+        with rasterio.open(self.path) as src:
             out_image, out_transform = mask(src, geoms, crop=True, nodata=-9999.0)
             # The out_image result is a Numpy masked array
             # no_data = src.nodata
             # if no_data is None:
-            # 	no_data = 0.0
+            # no_data = 0.0
             nodata = -9999.0
         # print(out_image)
         # print(out_image.data.shape)

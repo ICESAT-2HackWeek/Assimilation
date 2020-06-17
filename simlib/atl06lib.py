@@ -183,7 +183,8 @@ def read_atl06(fname, epsg, outdir='data', bbox=None):
             print('out ->', outfile)
 
 
-def read_h5(fname, vnames=[]):
-    """Read a list of vars [v1, v2, ..] -> 2D."""
+def read_h5(fname):
+    """Read hdf5 file and return all variables"""
     with h5py.File(fname, 'r') as f:
-        return np.column_stack([f[v][()] for v in vnames])
+        vnames = [key for key in f.keys()]
+        return np.column_stack([f[v][()] for v in vnames]), vnames

@@ -49,3 +49,23 @@ here.
 ### `scripts`
 Helper utilities that are shared with the team
 
+### Stand-up June 17th
+
+What have we been working on?
+* Enabled [netrc authentication](https://github.com/icesat2py/icepyx/pull/71) in collaboration with icepyx
+* Created [simlib](https://github.com/ICESAT-2HackWeek/Assimilation/tree/master/simlib) library to host functions and classes
+* Created methods to query NSIDC for metadata and send requests to the openaltimetry API ([example](https://github.com/ICESAT-2HackWeek/Assimilation/blob/master/contributors/icetianli/READ_ATL06.ipynb))
+* Created methods for raster and point processing / analysis
+
+
+What do we plan to do next?
+* Create integrated workflow example using the simlib library for presentation tomorrow - Mike, Team
+* Send requests to the openaltimetry in parallel - Tian, Friedrich
+* Create quick plotting method using data returned from openaltimetry API prior to NSIDC download - Tian, Friedrich
+* Create generic methods to mask / classify points using raster or polygon mask inputs - Debmita, Whyjay
+* Create generic methods to mask reference DEMs using raster or polygon mask inputs - Friedrich, Mike
+* Develop point gridding and interpolation methods - Whyjay
+
+Blockers?
+* Does anyone have a point of contact at openaltimetry to provide feedback?
+

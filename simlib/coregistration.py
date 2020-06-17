@@ -6,6 +6,10 @@ import gdal
 import osr
 import numpy as np
 import pyproj
+import rasterio
+from rasterio.plot import show as rio_show
+from rasterio.mask import mask
+import geopandas as gpd
 
 class reference_dem:
 
@@ -60,12 +64,48 @@ class reference_dem:
             self.bbox_epsg = str(epsg)
             
     def show(self, ax=None):
-        import rasterio
-        from rasterio.plot import show as rio_show
         if not ax:
             import matplotlib.pyplot as plt
             fig, ax = plt.subplot()
         ds_rasterio = rasterio.open(self.path)
         rio_show(ds_rasterio, ax=ax)
+        
+    def ClippedByPolygon(self, polygon_shapefile):
+
+        """
+        Return all pixel values within a given polygon shapefile. 
+        According to
+        https://gis.stackexchange.com/questions/260304/extract-raster-values-within-shapefile-with-pygeoprocessing-or-gdal
+        """
+        # from rasterio import logging
+        # log = logging.getLogger()
+        # log.setLevel(logging.ERROR)
+
+        from shapely.geometry import mapping
+
+        shapefile = gpd.read_file(polygon_shapefile)
+        geoms = shapefile.geometry.values
+        # geometry = geoms[0] # shapely geometry
+        # geoms = [mapping(geoms[0])] # transform to GeJSON format
+        geoms = [mapping(geoms[i]) for i in range(len(geoms))]
+        with rasterio.open(self.fpath) as src:
+            out_image, out_transform = mask(src, geoms, crop=True, nodata=-9999.0)
+            # The out_image result is a Numpy masked array
+            # no_data = src.nodata
+            # if no_data is None:
+            # 	no_data = 0.0
+            nodata = -9999.0
+        # print(out_image)
+        # print(out_image.data.shape)
+        # print(out_image.data)
+        try:
+            clipped_data = out_image.data[0]
+        except NotImplementedError:
+            clipped_data = out_image[0]
+        # PROBABLY HAVE TO CHANGE TO out_image[0] HERE
+        # extract the valid values
+        # and return them as a numpy 1-D array
+        # return np.extract(clipped_data != nodata, clipped_data)
+        return clipped_data
 
             

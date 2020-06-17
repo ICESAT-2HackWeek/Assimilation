@@ -12,6 +12,7 @@ class reference_dem:
     def __init__(self,dem_file_path):
         self.load_dem_from_path(dem_file_path)
         self.calculate_bounding_box(self.epsg)
+        self.path = dem_file_path
 
     ##################################################################################
     # These are functions to initiate the DEM object and create the bounding box
@@ -57,4 +58,10 @@ class reference_dem:
             t_y, t_x = self.transform_coord(int(self.epsg), epsg, bbox_corners[:,0], bbox_corners[:,1])
             self.bbox = [t_x.min(),t_y.min(),t_x.max(),t_y.max()]
             self.bbox_epsg = str(epsg)
+            
+    def show(self):
+        import rasterio
+        from rasterio.plot import show as rio_show
+        ds_rasterio = rasterio.open(self.path)
+        rio_show(ds_rasterio)
             

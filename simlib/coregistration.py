@@ -10,6 +10,7 @@ import rasterio
 from rasterio.plot import show as rio_show
 from rasterio.mask import mask
 import geopandas as gpd
+from shapely.geometry import mapping
 
 class reference_dem:
 
@@ -69,7 +70,10 @@ class reference_dem:
             fig, ax = plt.subplots()
         ds_rasterio = rasterio.open(self.path)
         rio_show(ds_rasterio, ax=ax)
-        
+    
+    ##################################################################################
+    # These are functions to create the bare rock mask
+    
     def ClippedByPolygon(self, polygon_shapefile):
 
         """
@@ -81,9 +85,8 @@ class reference_dem:
         # log = logging.getLogger()
         # log.setLevel(logging.ERROR)
 
-        from shapely.geometry import mapping
-
         shapefile = gpd.read_file(polygon_shapefile)
+        shapefile = shapefile.to_crs("EPSG:"+str(self.epsg))
         geoms = shapefile.geometry.values
         # geometry = geoms[0] # shapely geometry
         # geoms = [mapping(geoms[0])] # transform to GeJSON format
@@ -102,10 +105,35 @@ class reference_dem:
             clipped_data = out_image.data[0]
         except NotImplementedError:
             clipped_data = out_image[0]
+        
+        ice_mask = np.copy(clipped_data)
+        ice_mask[ice_mask>0]=0
+        ice_mask[ice_mask<0]=1
         # PROBABLY HAVE TO CHANGE TO out_image[0] HERE
         # extract the valid values
         # and return them as a numpy 1-D array
         # return np.extract(clipped_data != nodata, clipped_data)
-        return clipped_data
+        return ice_mask
 
-            
+    def create_bare_rock_mask(self,method=None,polygon_shapefile=None):
+        
+        if method:
+            if method in ['RGI']:
+                if method=='RGI':
+                    print('Creating mask with polygons from the Randolph Glacier Index (0=ice, 1=not ice)')
+                    if polygon_shapefile:
+                        ice_mask = self.ClippedByPolygon(polygon_shapefile)
+                        self.rgi_mask = ice_mask
+                        self.mask = ice_mask
+                    else:
+                        raise ValueError('polygon_shapefile keyword not specified')
+            else:
+                raise ValueError(f'Method {method} not recognized')
+        else:
+            raise ValueError('Method keyword not specified')
+        
+    
+    ##################################################################################
+    # These are some extra tools
+    
+    

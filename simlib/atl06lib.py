@@ -186,7 +186,7 @@ def read_atl06(fname, epsg, outdir='data', bbox=None):
 
 def read_h5(fname, vnames=None):
     """Read hdf5 file and return all variables"""
-    with h5py.File(fname, ‘r’) as f:
+    with h5py.File(fname, 'r') as f:
         if not vnames:
             vnames = [key for key in f.keys()]
         return np.column_stack([f[v][()] for v in vnames]), vnames

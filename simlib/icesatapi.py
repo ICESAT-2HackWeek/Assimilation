@@ -7,8 +7,10 @@ import requests
 import numpy as np
 import pandas as pd
 from itertools import compress
+import simlib.config as cn
 
-def file_meta(fname):
+
+def file_meta(filelist):
     """
     Derive metadata from filename
     Input:
@@ -19,45 +21,53 @@ def file_meta(fname):
         cycle
     """
     file_re=re.compile('ATL06_(?P<date>\d+)_(?P<rgt>\d\d\d\d)(?P<cycle>\d\d)(?P<region>\d\d)_(?P<release>\d\d\d)_(?P<version>\d\d).h5')
-    temp=file_re.search(fname)
-    rgt = temp['rgt'].strip("0")
-    cycle = temp['cycle'].strip("0")
-    f_date = temp['date']
-    ftime = f_date[:4] + '-' + f_date[4:6] + '-' + f_date[6:8]
     
-    return rgt, ftime, cycle
+    paralist = [] # list of parameters for API query
+    
+    for fname in filelist:
+        
+        temp=file_re.search(fname)
+        rgt = temp['rgt'].strip("0")
+        cycle = temp['cycle'].strip("0")
+        f_date = temp['date']
+        ftime = f_date[:4] + '-' + f_date[4:6] + '-' + f_date[6:8]
+        
+        paras = [rgt, ftime, cycle]
+        paralist.append(paras)
+        
+    f_dict = zip(filelist, paralist)
+    
+    return f_dict
 
-def OA_request (base_url,Date,bbox,trackId,beamlist,cycle,product = 'atl06'):
+def OA_request(paralist, product = 'atl06'):
     """
     Request data from OpenAltimetry based on API
     Inputs:
-        base_url: 'https://openaltimetry.org/data/api/icesat2/level3a'
-        Date: acquisition date of ICESat-2 product
-        bbox: bounding box [minx,miny,maxx,maxy]
-        trackId: RGT number
-        beamlist: list of beam number
-        cycle: cycle number
+        paralist: [trackId, Date, cycle]
+            trackId: RGT number
+            beamlist: list of beam number
+            cycle: cycle number
         product: ICESat-2 product
     Output:
         track_df: dataframe for all beams of one RGT
     """
     points = [] # store all beam data for one RGT
-    
+    trackId,Date,cycle = paralist[0], paralist[1], paralist[2]
     # iterate all six beams 
-    for beam in beamlist:
+    for beam in cn.beamlist:
         # Generate API
         payload =  {'product':product,
                     'startDate': Date,
-                    'minx':str(bbox[0]),
-                    'miny':str(bbox[1]),
-                    'maxx':str(bbox[2]),
-                    'maxy':str(bbox[3]),
+                    'minx':str(cn.bbox[0]),
+                    'miny':str(cn.bbox[1]),
+                    'maxx':str(cn.bbox[2]),
+                    'maxy':str(cn.bbox[3]),
                     'trackId': trackId,
                     'beamName': beam,
                     'outputFormat':'json'}
         
         # request OpenAltimetry
-        r = requests.get(base_url, params=payload)
+        r = requests.get(cn.base_url, params=payload)
         
         # get elevation data
         elevation_data = r.json()

@@ -22,7 +22,7 @@ def file_meta(filelist):
     """
     file_re=re.compile('ATL06_(?P<date>\d+)_(?P<rgt>\d\d\d\d)(?P<cycle>\d\d)(?P<region>\d\d)_(?P<release>\d\d\d)_(?P<version>\d\d).h5')
     
-    paralist = [] # list of parameters for API query
+    para_lists = [] # list of parameters for API query
     
     for fname in filelist:
         
@@ -33,11 +33,9 @@ def file_meta(filelist):
         ftime = f_date[:4] + '-' + f_date[4:6] + '-' + f_date[6:8]
         
         paras = [rgt, ftime, cycle]
-        paralist.append(paras)
-        
-    f_dict = zip(filelist, paralist)
+        para_lists.append(paras)
     
-    return f_dict
+    return para_lists
 
 def OA_request(paralist, product = 'atl06'):
     """

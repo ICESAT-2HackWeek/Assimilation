@@ -136,4 +136,21 @@ class reference_dem:
     ##################################################################################
     # These are some extra tools
     
-    
+    def Sample(self, gdf_array, tag='h_dem'):
+        
+        """ 
+        Read a GeoDataFrame point collection (presumably ICESat-2 points)
+        and sample the dem based on point locations.
+        Return a GeoDataFrame object with one extra column 'h_dem'. Column name can be changed using 'tag' argument.
+        For now, it is required that the GeoDataFrame must have 'x' and 'y' column showing coordinates,
+        and its projection mush be the same with the referece_dem object.
+        """
+        rio_ds = rasterio.open(self.path)
+        xytuple = list(gdf_array[['x', 'y']].to_records(index=False))
+        sample_gen = rio_ds.sample(xytuple)
+        
+        h_raster = [float(record) for record in sample_gen]
+        # print(h_raster)
+        new_gdf_array = gdf_array.copy()
+        new_gdf_array[tag] = h_raster
+        return new_gdf_array

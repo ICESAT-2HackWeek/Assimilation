@@ -182,7 +182,6 @@ def read_atl06(fname, epsg, outdir='data', bbox=None):
             for k, v in data.items(): fo[k] = v
             print('out ->', outfile)
 
-
 def read_h5(fname, vnames=None):
     """Read hdf5 file and return all variables"""
     with h5py.File(fname, 'r') as f:

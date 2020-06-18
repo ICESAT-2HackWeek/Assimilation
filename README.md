@@ -51,7 +51,7 @@ Helper utilities that are shared with the team
 
 ## Integrated Workflow
 
-Link to [notebook](https://github.com/ICESAT-2HackWeek/Assimilation/blob/master/notebooks/project_result_1.ipynb)
+Link to [notebook](https://github.com/ICESAT-2HackWeek/Assimilation/blob/master/notebooks/Assimilation_presentation.ipynb)
 
 #### Overview of simlib library
 Example functions from simlib and plots

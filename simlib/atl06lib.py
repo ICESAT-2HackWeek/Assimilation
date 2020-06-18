@@ -182,8 +182,43 @@ def read_atl06(fname, epsg, outdir='data', bbox=None):
             for k, v in data.items(): fo[k] = v
             print('out ->', outfile)
 
-
-def read_h5(fname, vnames=[]):
-    """Read a list of vars [v1, v2, ..] -> 2D."""
+def read_h5(fname, vnames=None):
+    """Read hdf5 file and return all variables"""
     with h5py.File(fname, 'r') as f:
-        return np.column_stack([f[v][()] for v in vnames])
+        if not vnames:
+            vnames = [key for key in f.keys()]
+        return np.column_stack([f[v][()] for v in vnames]), vnames
+    
+    
+def points_in_polygon(points_geometry, shp_filename):
+    # points_geometry: N-by-2 np array or GeoDataFram or GeoSeries defining the geometry of points
+    # shp_filename: (multi-)polygon shapefile name 
+    # Both datasets should have the SAME CRS!
+
+    # return: np mask array showing where the targeted points are.
+
+    # import logging
+    # logging.basicConfig(level=logging.WARNING)
+    import geopandas as gpd
+    from shapely.geometry import Point
+    # from shapely.geometry import mapping
+
+    shapefile = gpd.read_file(shp_filename)
+    poly_geometries = [shapefile.loc[i]['geometry'] for i in range(len(shapefile))]
+    if type(points_geometry) is gpd.GeoDataFrame:
+        pt_gs = gpd.GeoSeries(points_geometry.geometry)
+    elif type(points_geometry) is gpd.GeoSeries:
+        pt_gs = points_geometry
+    else:
+        pt_geometries = [Point(xy) for xy in zip(points_geometry[:, 0], points_geometry[:, 1])]
+        pt_gs = gpd.GeoSeries(pt_geometries)
+
+    idx = None
+    for single_poly in poly_geometries:
+        if idx is None:
+            idx = pt_gs.within(single_poly)
+        else:
+            tmp = pt_gs.within(single_poly)
+            idx = np.logical_or(idx, tmp)
+
+    return idx

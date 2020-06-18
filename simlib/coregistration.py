@@ -10,6 +10,7 @@ import rasterio
 from rasterio.plot import show as rio_show
 from rasterio.mask import mask
 import geopandas as gpd
+from shapely.geometry import mapping
 
 class reference_dem:
 
@@ -66,10 +67,13 @@ class reference_dem:
     def show(self, ax=None):
         if not ax:
             import matplotlib.pyplot as plt
-            fig, ax = plt.subplot()
+            fig, ax = plt.subplots()
         ds_rasterio = rasterio.open(self.path)
         rio_show(ds_rasterio, ax=ax)
-        
+    
+    ##################################################################################
+    # These are functions to create the bare rock mask
+    
     def ClippedByPolygon(self, polygon_shapefile):
 
         """
@@ -81,9 +85,8 @@ class reference_dem:
         # log = logging.getLogger()
         # log.setLevel(logging.ERROR)
 
-        from shapely.geometry import mapping
-
         shapefile = gpd.read_file(polygon_shapefile)
+        shapefile = shapefile.to_crs("EPSG:"+str(self.epsg))
         geoms = shapefile.geometry.values
         # geometry = geoms[0] # shapely geometry
         # geoms = [mapping(geoms[0])] # transform to GeJSON format
@@ -102,10 +105,52 @@ class reference_dem:
             clipped_data = out_image.data[0]
         except NotImplementedError:
             clipped_data = out_image[0]
+        
+        ice_mask = np.copy(clipped_data)
+        ice_mask[ice_mask>0]=0
+        ice_mask[ice_mask<0]=1
         # PROBABLY HAVE TO CHANGE TO out_image[0] HERE
         # extract the valid values
         # and return them as a numpy 1-D array
         # return np.extract(clipped_data != nodata, clipped_data)
-        return clipped_data
+        return ice_mask
 
-            
+    def create_bare_rock_mask(self,method=None,polygon_shapefile=None):
+        
+        if method:
+            if method in ['RGI']:
+                if method=='RGI':
+                    print('Creating mask with polygons from the Randolph Glacier Index (0=ice, 1=not ice)')
+                    if polygon_shapefile:
+                        ice_mask = self.ClippedByPolygon(polygon_shapefile)
+                        self.rgi_mask = ice_mask
+                        self.mask = ice_mask
+                    else:
+                        raise ValueError('polygon_shapefile keyword not specified')
+            else:
+                raise ValueError(f'Method {method} not recognized')
+        else:
+            raise ValueError('Method keyword not specified')
+        
+    
+    ##################################################################################
+    # These are some extra tools
+    
+    def Sample(self, gdf_array, tag='h_dem'):
+        
+        """ 
+        Read a GeoDataFrame point collection (presumably ICESat-2 points)
+        and sample the dem based on point locations.
+        Return a GeoDataFrame object with one extra column 'h_dem'. Column name can be changed using 'tag' argument.
+        For now, it is required that the GeoDataFrame must have 'x' and 'y' column showing coordinates,
+        and its projection mush be the same with the referece_dem object.
+        """
+        rio_ds = rasterio.open(self.path)
+        xytuple = list(gdf_array[['x', 'y']].to_records(index=False))
+        sample_gen = rio_ds.sample(xytuple)
+        
+        h_raster = [float(record) for record in sample_gen]
+        # print(h_raster)
+        new_gdf_array = gdf_array.copy()
+        new_gdf_array[tag] = h_raster
+        return new_gdf_array

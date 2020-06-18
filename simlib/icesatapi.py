@@ -10,15 +10,17 @@ from itertools import compress
 import simlib.config as cn
 
 
-def file_meta(filelist):
+def file_meta(filelist,bbox):
     """
     Derive metadata from filename
     Input:
         fname: ATL06 file name
+        bbox: bbox of the DEM
     Output:
         rgt
         ftime: format (yyyy-mm-dd)
         cycle
+        bbox
     """
     file_re=re.compile('ATL06_(?P<date>\d+)_(?P<rgt>\d\d\d\d)(?P<cycle>\d\d)(?P<region>\d\d)_(?P<release>\d\d\d)_(?P<version>\d\d).h5')
     
@@ -32,7 +34,7 @@ def file_meta(filelist):
         f_date = temp['date']
         ftime = f_date[:4] + '-' + f_date[4:6] + '-' + f_date[6:8]
         
-        paras = [rgt, ftime, cycle]
+        paras = [rgt, ftime, cycle, bbox]
         para_lists.append(paras)
     
     return para_lists
@@ -41,25 +43,26 @@ def OA_request(paralist, product = 'atl06'):
     """
     Request data from OpenAltimetry based on API
     Inputs:
-        paralist: [trackId, Date, cycle]
+        paralist: [trackId, Date, cycle, bbox]
             trackId: RGT number
             beamlist: list of beam number
             cycle: cycle number
+            bbox: DEM bounding box
         product: ICESat-2 product
     Output:
         track_df: dataframe for all beams of one RGT
     """
     points = [] # store all beam data for one RGT
-    trackId,Date,cycle = paralist[0], paralist[1], paralist[2]
+    trackId,Date,cycle,bbox = paralist[0], paralist[1], paralist[2], paralist[3]
     # iterate all six beams 
     for beam in cn.beamlist:
         # Generate API
         payload =  {'product':product,
                     'startDate': Date,
-                    'minx':str(cn.bbox[0]),
-                    'miny':str(cn.bbox[1]),
-                    'maxx':str(cn.bbox[2]),
-                    'maxy':str(cn.bbox[3]),
+                    'minx':str(bbox[0]),
+                    'miny':str(bbox[1]),
+                    'maxx':str(bbox[2]),
+                    'maxy':str(bbox[3]),
                     'trackId': trackId,
                     'beamName': beam,
                     'outputFormat':'json'}

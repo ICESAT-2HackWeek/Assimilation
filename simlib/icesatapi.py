@@ -9,6 +9,37 @@ import pandas as pd
 from itertools import compress
 import simlib.config as cn
 
+def grid_bbox(bbox, binsize = 5):
+    """
+    Split bounding box into smaller grids if latitude/longitude range exceed the default 5 degree limit of OpenAltimetry 
+    """
+        
+    lonmin = bbox[0]
+    latmin = bbox[1]
+    lonmax = bbox[2]
+    latmax = bbox[3]
+
+    lonx = np.arange(lonmin, lonmax + binsize, binsize)
+    laty = np.arange(latmin, latmax + binsize, binsize) 
+    lonxv, latyv = np.meshgrid(lonx, laty)
+    
+    ydim, xdim = lonxv.shape 
+
+    bbox_list = []
+    for i in np.arange(0,ydim-1): 
+        for j in np.arange(0,xdim-1):
+            # iterate grid for bounding box
+            bbox_ij = [lonxv[i,j], latyv[i,j], lonxv[i+1,j+1], latyv[i+1,j+1]]
+            
+            if bbox_ij[2] > lonmax:
+                bbox_ij[2] = lonmax
+
+            if bbox_ij[3] > latmax:
+                bbox_ij[3] = latmax
+
+            bbox_list.append(bbox_ij)
+            
+    return bbox_list
 
 def file_meta(filelist,bbox):
     """
@@ -58,7 +89,7 @@ def OA_request(paralist, product = 'atl06'):
     for beam in cn.beamlist:
         # Generate API
         payload =  {'product':product,
-                    'startDate': Date,
+                    'endDate': Date,
                     'minx':str(bbox[0]),
                     'miny':str(bbox[1]),
                     'maxx':str(bbox[2]),

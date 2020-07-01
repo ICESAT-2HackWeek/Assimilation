@@ -21,15 +21,16 @@ Whyjay Zheng
 Friedrich Knuth
 
 ## Study Sites
-* Arctic Polar Region
-* High-mountain Asia
-* Pacific Northwestern United States
+* **Pacific Northwestern United States** (showcased in the `notebooks` folder)
+
+Potential future targets include Arctic Polar Region & High-mountain Asia.
+
 
 ## Files
-* `.gitignore`
-<br> Globally ignored files by `git` for the project.
-* `environment.yml`
-<br> `conda` environment description needed to run this project.
+* `.gitignore` - Globally ignored files by `git` for the project.
+* `environment.yml` - `conda` environment description needed to run this project.
+* `LICENSE` - license information.
+* `setup.py` - configuration of `pip` installation.
 
 ## Installation
 * `git clone https://github.com/ICESAT-2HackWeek/Assimilation.git`   
@@ -38,37 +39,46 @@ Friedrich Knuth
 ## Folders
 
 ### `contributors`
-Each team member has it's own folder under contributors, where he/she can
-work on their contribution. Having a dedicated folder for one-self helps to 
-prevent conflicts when merging with master.
+Each team member has it's own folder under here, where he/she work on their contribution.
+
+### `figures`
+Figures to be inserted in readme files or notebooks.
 
 ### `notebooks`
-Notebooks that are considered delivered results for the project should go in
-here.
+**Notebooks that are considered delivered results for the project.**
 
 ### `scripts`
-Helper utilities that are shared with the team
+Helper utilities that are not included in `simlib`.
+
+### `simlib`
+**Main library of the project.**
 
 ## Integrated Workflow
 
-Link to [notebook](https://github.com/ICESAT-2HackWeek/Assimilation/blob/master/notebooks/Assimilation_presentation.ipynb)
+[Link to the project notebook](https://github.com/ICESAT-2HackWeek/Assimilation/blob/master/notebooks/Assimilation_presentation.ipynb)
 
-#### Overview of simlib library
-Example functions from simlib and plots
-#### Data download from OpenAltimetry
-Example functions from simlib and plots
-#### Data download NSIDC using icepyx
-Example functions from simlib and plots
-#### Reference DEM pre-processing
-Example functions from simlib and plots
-#### Point masking and classification
-Example functions from simlib and plots
-#### Point interpolation
-Example functions from simlib and plots
-#### Co-registration
-Example functions from simlib and plots
+* Overview of `simlib` library
+  - Installation using `pip`
+* Create a Reference DEM object
+  - `reference_dem` object
+  - Visualization
+  - Extract bounding box information for downloading ICESat-2 data
+* Locate ICESat-2 ATL06 data in the DEM domain
+  - Query and download data from Open Altimetry with `OA_request` function
+  - Query and download data from NSIDC with Icepyx
+  - Parallel downloading enabled
+  - Pre-filtering ATL06 data
+  - Overlay ATL06 data on a basemap
+* Compare the DEM with ATL06 over bare rock
+  - Sample DEM elevations at ATL06 point locations
+  - Classify land cover for each ATL06 point using input polygons (glacier outline)
+  - Histogram and uncertatinty analysis
+* Interpolating ATL06 data with DEM infomation
+  - Compare results with different gridding algorithms
+  - Generate profiles along any user-defined direction
+  - Preliminary quality assessment
 
-## Stand-up June 17th
+## Note from Stand-up June 17th
 
 #### What have we been working on?
 * Enabled [netrc authentication](https://github.com/icesat2py/icepyx/pull/71) in collaboration with icepyx
@@ -86,8 +96,8 @@ Example functions from simlib and plots
 * Develop point gridding and interpolation methods - Whyjay
 * Develop DEM co-registration methods - Mike, Friedrich
 
-#### Blockers?
+<!-- #### Blockers?
 * Does anyone have a point of contact at openaltimetry to provide feedback?
 
-<img src="./figures/standup.png" width="400">
+<img src="./figures/standup.png" width="400"> -->
 
